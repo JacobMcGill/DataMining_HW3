@@ -7,6 +7,11 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r, include = FALSE}
+#Data sets and packages you need to load for the assignment go here.
+```
+
+
 # Question 1
 
 # Question 2
@@ -14,7 +19,7 @@ knitr::opts_chunk$set(echo = TRUE)
 # Question 3
 
 # Question 4
-
+I have started working on this one already.
 ## GitHub Documents
 
 This is an R Markdown format used for publishing markdown documents to GitHub. When you click the **Knit** button all R code chunks are run and a markdown file (.md) suitable for publishing to GitHub is generated.
