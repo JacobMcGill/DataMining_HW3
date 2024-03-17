@@ -9,6 +9,18 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r, include = FALSE}
 #Data sets and packages you need to load for the assignment go here.
+library(ggmap)
+library(tidyverse)
+library(patchwork)
+library(ggdensity)
+library(rpart)
+library(rpart.plot)
+library(rsample) 
+library(randomForest)
+library(lubridate)
+library(modelr)
+housing = read.csv('C://Users/jacob/Downloads/CAhousing.csv', header=TRUE)
+stadia_key = Sys.getenv("stadia_key")
 ```
 
 
@@ -19,6 +31,61 @@ knitr::opts_chunk$set(echo = TRUE)
 # Question 3
 
 # Question 4
+```{r, include = FALSE}
+register_stadiamaps(stadia_key, write = FALSE)
+Cal = c(left = -124.5, bottom = 32, right = -112, top = 42)
+cal_test = get_stadiamap(Cal, zoom = 5, maptype = "alidade_smooth")
+
+#Modify housing data to plot median house prices
+house_val = housing %>%
+  mutate(lon = longitude, lat = latitude) %>%
+  select(lon, lat, medianHouseValue)
+```
+```{r, include = FALSE}
+#Now lets predict housing prices using trees. Going over the notes, it looks like we may want to use either random forests or boosted trees, although right now I'm leaning towards random forest since it requires less tuning. Below is a good start, where we have the models established. Next steps would be standardizing by households and including an estimate for the overall out of sample accuracy of the proposed model. May also want to consider looking at log values instead too.
+house_mod = housing %>%
+  mutate(stand_rooms = totalRooms/households,
+         stand_bedrooms = totalBedrooms/households)
+house_split =  initial_split(house_mod, prop=0.8)
+house_train = training(house_split)
+house_test  = testing(house_split)
+house.forest = randomForest(medianHouseValue ~ latitude + longitude + housingMedianAge + stand_rooms + 
+                              stand_bedrooms + population + 
+                              households + medianIncome,
+                           data=house_train, importance = TRUE)
+```
+To predict median House Value with the features provided, we decided to use a random forest model, specifically using the randomForest function in R. Both totalRooms and totalBedrooms listed the number of bedrooms and rooms for the census track, which could be problematic. To adjust this, Total Rooms and Total Bedrooms were standardized by census tract population, dividing both values by the population of their census tract. Apart from these modifications, we used all other columns in the data as is. Since the number of variables was small (only 8), we did not use PCA to simplify the data before finding the tree. Further, as we used the random forest model, cross validation was not necessary.After running the randomForest model on the training data, we tested its out of sample accuracy to estimate the following RMSE as ,easure of out of sample accuracy.
+```{r, include = TRUE}
+modelr::rmse(house.forest, house_test)
+```
+Next we are going to plot the actual median house values, the predicted median house values and the residuals of the model's predictions
+```{r, include = FALSE}
+
+house_mod = house_mod %>%
+  mutate(house_pred = predict(house.forest, house_mod),
+           housing_resid = medianHouseValue - house_pred)
+```
+```{r, include = TRUE}
+
+house_plot = ggplot(house_val) + 
+  geom_point(aes(x=lon, y=lat, color=medianHouseValue)) + 
+  scale_color_continuous(type = "viridis")
+ggmap(cal_test) + geom_point(data = house_val, aes(x=lon, y=lat, color=medianHouseValue))  + 
+  scale_color_continuous(type = "viridis")
+
+house_predict = house_mod %>%
+  mutate(lon = longitude, lat = latitude) %>%
+  select(lon, lat, house_pred)
+ggmap(cal_test) + geom_point(data = house_predict, aes(x=lon, y=lat, color=house_pred))  + 
+  scale_color_continuous(type = "viridis")
+
+house_res = house_mod %>%
+  mutate(lon = longitude, lat = latitude) %>%
+  select(lon, lat, housing_resid)
+ggmap(cal_test) + geom_point(data = house_res, aes(x=lon, y=lat, color=housing_resid))  + 
+  scale_color_continuous(type = "viridis")
+```
+As can be seen in this 3 graphs, the model appears to do a decent job of predicting the median value of houses in a census tract. The exceptions are a census tract near the California-Nevada border (the yellow dot in the housing_resid graph) and a census tract at about 37 degrees latitude and -122 degree longitude (the dark purple dot in the housing_resid graph). The model appears to significantly underestimated the median house value in that tract while underestimating the latter tract.
 I have started working on this one already.
 ## GitHub Documents
 
