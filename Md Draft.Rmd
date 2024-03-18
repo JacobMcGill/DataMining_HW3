@@ -7,7 +7,7 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r, include = FALSE}
+```{r, include = TRUE}
 #Data sets and packages you need to load for the assignment go here.
 library(ggmap)
 library(tidyverse)
