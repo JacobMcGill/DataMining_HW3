@@ -13,11 +13,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 # Question 1
-
+Jacob will take care of this.
 # Question 2
-
+Musab will take care of this.
 # Question 3
-
+Daniel will take care of this.
 # Question 4
 I have started working on this one already.
 ## GitHub Documents
