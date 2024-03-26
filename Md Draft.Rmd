@@ -7,7 +7,7 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r, include = TRUE}
+```{r, include = FALSE}
 #Data sets and packages you need to load for the assignment go here.
 library(ggmap)
 library(tidyverse)
@@ -67,11 +67,11 @@ house_split =  initial_split(house_mod, prop=0.8)
 house_train = training(house_split)
 house_test  = testing(house_split)
 house.forest = randomForest(medianHouseValue ~ latitude + longitude + housingMedianAge + stand_rooms + 
-                              stand_bedrooms + population + 
+                              stand_bedrooms +stand_rooms + population + 
                               households + medianIncome,
                            data=house_train, importance = TRUE)
 ```
-To predict median House Value with the features provided, we decided to use a random forest model, specifically using the randomForest function in R. Both totalRooms and totalBedrooms listed the number of bedrooms and rooms for the census track, which could be problematic. To adjust this, Total Rooms and Total Bedrooms were standardized by census tract population, dividing both values by the population of their census tract. Apart from these modifications, we used all other columns in the data as is. Since the number of variables was small (only 8), we did not use PCA to simplify the data before finding the tree. Further, as we used the random forest model, cross validation was not necessary.After running the randomForest model on the training data, we tested its out of sample accuracy to estimate the following RMSE as ,easure of out of sample accuracy.
+To predict median House Value with the features provided, we decided to use a random forest model, specifically using the randomForest function in R. Both totalRooms and totalBedrooms listed the number of bedrooms and rooms for the census track, which could be problematic. To adjust this, Total Rooms and Total Bedrooms were standardized by census tract population, dividing both values by the population of their census tract. The resulting variables were stand_bedrooms and stand_rooms, which measure bedrooms and rooms by track populations. Apart from these modifications, we used all other columns in the data as is. Since the number of variables was small (only 8), we did not use PCA to simplify the data before finding the tree. Further, as we used the random forest model, cross validation was not necessary.After running the randomForest model on the training data, we tested its out of sample accuracy to estimate the following RMSE as a measure of out of sample accuracy.
 ```{r, include = TRUE}
 modelr::rmse(house.forest, house_test)
 ```
@@ -102,26 +102,4 @@ house_res = house_mod %>%
 ggmap(cal_test) + geom_point(data = house_res, aes(x=lon, y=lat, color=housing_resid))  + 
   scale_color_continuous(type = "viridis")
 ```
-As can be seen in this 3 graphs, the model appears to do a decent job of predicting the median value of houses in a census tract. The exceptions are a census tract near the California-Nevada border (the yellow dot in the housing_resid graph) and a census tract at about 37 degrees latitude and -122 degree longitude (the dark purple dot in the housing_resid graph). The model appears to significantly underestimated the median house value in that tract while underestimating the latter tract.
-I have started working on this one already.
-## GitHub Documents
-
-This is an R Markdown format used for publishing markdown documents to GitHub. When you click the **Knit** button all R code chunks are run and a markdown file (.md) suitable for publishing to GitHub is generated.
-
-## Including Code
-
-You can include R code in the document as follows:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+As can be seen in this 3 graphs, the model appears to do a decent job of predicting the median value of houses in a census tract. The model appears to slightly underestimate median house value compared to the actual median house value, but makes relatively close predictions on average, as can be seen with the residual dots that are mostly around dark green, light blue color. 
