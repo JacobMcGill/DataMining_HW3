@@ -8,7 +8,18 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r, include = FALSE}
-#Data sets and packages you need to load for the assignment go here.
+```{r, include=FALSE}
+dengue = read.csv("C:/Users/musab/OneDrive/Documents/ECON MA/Data mining/HW3/dengue.csv")
+library(rpart)
+library(randomForest)
+library(gbm)
+library(rpart.plot)
+library(Metrics)
+library(rsample)
+library(pdp)
+library(dplyr)
+```
+
 ```
 
 
