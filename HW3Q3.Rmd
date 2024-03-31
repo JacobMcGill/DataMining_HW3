@@ -1,0 +1,117 @@
+---
+title: "HW3 Q3"
+output: word_document
+date: "`r Sys.Date()`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r, include=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(rsample)
+library(mosaic)
+library(caret)
+library(rpart)
+library(randomForest)
+library(glmnet)
+
+```
+
+# Introduction 
+
+Using a comprehensive dataset on 7,894 commercial rental propertes from across the United States, we will first build the best predicitve model possible for revenue per square foot per calendar year. Using this model we will quantify the average change in rental income per square foot associated with green certification, combining both LEED and EnergyStar as a single "green certified" category for simplicity.
+
+# Data Preperation 
+
+Before building the model, we begin by preparing the dataset. Three key adjustments: Defining the revenue per square foot variable as the product of Rent and Leasing Rate, defining a single "green certified" variable that is equal to one if the building is either LEED or EnergyStar certified, and splitting the data into training and testing sets. 
+
+```{r, include=FALSE}
+greenhouses <- read.csv("~/Downloads/greenbuildings.csv")
+
+# Create revenue per square foot per year variable
+greenhouses$revenue_psqft <- greenhouses$Rent * greenhouses$leasing_rate
+
+# Create a single green certification variable that accounts for both LEED and EnergyStar
+greenhouses$green_certified <- ifelse(greenhouses$LEED == 1 | greenhouses$Energystar == 1, 1, 0)
+greenhouses <- na.omit(greenhouses)
+set.seed(123)
+
+split <- initial_split(greenhouses, prop = 0.8)
+train_set <- training(split)
+test_set <- testing(split)
+```
+
+# Model Construction 
+
+In the model construction phase, we established two models: a comprehensive baseline model using linear regression and a random forest model both aimed at predicting the revenue per square foot (revenue_psqft). The baseline linear model serves as a reference point against which we can evaluate the relative performance of the random forest model. 
+
+For the baseline linear regression model, we included relevant predictors and introduced an interaction term between market rent and size. In contrast, the random forest model was trained with a subset of predictors selected based on their importance in predicting revenue per square foot. Our random forest model construction utilized variable importance metrics to identify influential predictors.
+
+By comparing the performance metrics of the random forest model against the baseline linear regression model, we can assess the effectiveness of using a more sophisticated method for predicting rental revenue per square foot.
+
+
+
+
+```{r, echo=FALSE}
+lm_model <- lm(revenue_psqft ~ size + size * City_Market_Rent + age + 
+                         leasing_rate + class_a + class_b + amenities + 
+                         total_dd_07 + Gas_Costs + Electricity_Costs + green_certified,data  = train_set)
+summary(lm_model)
+
+
+rf_model <- randomForest(revenue_psqft ~ size +  age + leasing_rate + stories + renovated + class_a + class_b + amenities +
+                         City_Market_Rent + Gas_Costs + Electricity_Costs + green_certified, 
+                         data = train_set, importance = TRUE)
+
+var_importance <- importance(rf_model)
+print(rf_model)
+
+```
+
+# Model Evaluation
+
+```{r, echo=FALSE}
+lm_predictions <- predict(lm_model, newdata = test_set)
+rf_predictions <- predict(rf_model, newdata = test_set)
+
+lm_rmse <- sqrt(mean((lm_predictions - test_set$revenue_psqft)^2))
+rf_rmse <- sqrt(mean((rf_predictions - test_set$revenue_psqft)^2))
+
+cat("Linear Model RMSE:", lm_rmse, "\n")
+cat("Random Forest RMSE:", rf_rmse, "\n")
+
+```
+In the model evaluation phase, we compare the predictive performance of the baseline linear regression model and the random forest model on the testing dataset. The random forest model achieved a lower RMSE than the linear regression model. This indicates that the average deviation between the predictions of the actual revenue per square foot is significantly lower for the random forest model, thus the random forest model displays superior predictive accuracy compared to the baseline model. The random forest model also explains about 86% of the variation in revenue per square foot, a signficant improvement over the R-Squared value for the linear model, further evidencing it's enhanced performance. 
+
+By leveraging a set of decision trees, the random forest model can better adapt to the complexities inherent in the data, resulting in more accurate predictions of rental revenue per square foot. Therefore, the random forest model emerges as the preferred choice for its predictive accuracy and we will use it to determine the average change in rental income associated with green certification. 
+
+# Quantifying the Average Change in Revenue Per Square Foot Associated With Green Certification
+
+```{r, echo=FALSE}
+
+# Predict revenue per square foot for the testing set using the random forest model
+test_set$predicted_revenue <- predict(rf_model, newdata = test_set)
+
+# Calculate the average predicted for green-certified buildings
+avg_revenue_green <- mean(test_set$predicted_revenue[test_set$green_certified == 1])
+
+# Calculate the average predicted for non-green-certified buildings
+avg_revenue_non_green <- mean(test_set$predicted_revenue[test_set$green_certified == 0])
+
+average_change <- avg_revenue_green - avg_revenue_non_green
+
+# Print the results
+cat("Average Change in Rental Income Per Square Foot Associated With Green Certification:", average_change, "\n")
+
+partialPlot(rf_model, train_set, x.var = "green_certified")
+```
+
+# Conclusion
+
+Our objective was to predict revenue per square foot for commercial rental properties and to quantify the financial impact of green certification. Data preprocessing was conducted, and the dataset was split into training and testing subsets. We developed predictive models using linear regression and random forest techniques, with the random forest model outperforming its linear regression counterpart in terms of predictive accuracy. We used the random forest model to determine that a building with a green certification is estimated to generate about $300 in additional annual revenue per square foot. However, the partial dependence plot revealed a positive but modest relationship when the effects of other variables are controlled, indicating that green certification has a positive, albeit smaller than initially estimated, isolated impact on predicted annual revenue per square foot.  This nuanced finding suggests that while green certification is beneficial, the magnitude of its isolated effect on revenue per square foot is not as substantial when considered in the context of other contributing factors.
+
+
