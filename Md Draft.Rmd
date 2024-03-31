@@ -28,7 +28,7 @@ stadia_key = Sys.getenv("stadia_key")
 
 ## 1
 
-You cannot just regress "Crime" on "Police" to understand the impact of more cops in the street on crime due to the fact that cities with more crime are likely to have more police officers.
+You cannot just regress "Crime" on "Police" to understand the impact of more cops in the street on crime due to the fact that cities with more crime are likely to have more police officers.Because this unobserved 3rd variable exists, regressing crime on police will not produce an accurate measure of the effect of the number of police officers on the crime rate.
 
 ## 2
 
@@ -40,7 +40,7 @@ The authors controlled for Metro ridership to control for if tourists were less 
 
 ## 4
 
-The model estimates the effect of an interaction between being on high alert and in Washington DC District 1 (the district containing the National Mall), an interaction between high alert and being in the other police districts, and the log of midday ridership on the DC Metro on daily crime rates. It is estimating the difference between the decrease in daily crime rates in the District containing the National Mall (which sees a greater increases in police presence) compared to other districts, controlling for people travelling around the city. As can be seen, District 1 has a decreases of -2.62 average daily crime rates when high alert os declared, while no statistically significant effect is estimated in the other districts.
+The model estimates the effect of an interaction between being on high alert and in Washington DC District 1 (the district containing the National Mall), an interaction between high alert and being in the other police districts, and the log of midday ridership on the DC Metro on daily crime rates. It is estimating the difference between the decrease in daily crime rates in the District containing the National Mall (which sees a greater increases in police presence) compared to other districts, controlling for people travelling around the city. As can be seen, District 1 has a decreases of -2.62 average daily crime rates when high alert is declared, while no statistically significant effect is estimated in the other districts.
 
 
 # Question 2
