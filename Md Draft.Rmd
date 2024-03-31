@@ -19,8 +19,6 @@ library(pdp)
 library(dplyr)
 ```
 
-```
-
 
 # Question 1
 Jacob will take care of this.
