@@ -1,126 +1,25 @@
 ---
-title: "ECO395M Data Mining: HW 3"
-output: github_document
+title: "HW3 Q3"
+output: word_document
+date: "`r Sys.Date()`"
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+
 ```{r, include=FALSE}
-dengue = read.csv("C:/Users/musab/OneDrive/Documents/ECON MA/Data mining/HW3/dengue.csv")
-greenhouses <- read.csv("~/Downloads/greenbuildings.csv")
-library(rpart)
-library(randomForest)
-library(gbm)
-library(rpart.plot)
-library(Metrics)
-library(rsample)
-library(pdp)
-library(dplyr)
 library(tidyverse)
 library(ggplot2)
 library(rsample)
 library(mosaic)
 library(caret)
+library(rpart)
+library(randomForest)
 library(glmnet)
-```
-
-
-# Question 1
-Jacob will take care of this.
-
-# Question 2
-
-```{r, message=FALSE, echo=FALSE}
-# Exclude rows with missing values
-dengue_clean <- na.exclude(dengue)
-
-# Convert 'city' and 'season' to factors
-dengue_clean$city <- as.factor(dengue_clean$city)
-dengue_clean$season <- as.factor(dengue_clean$season)
-
-set.seed(123) # Seed for reproducibility
-split <- initial_split(dengue_clean, prop = 0.9)
-train <- training(split)
-test <- testing(split)
 
 ```
-
-```{r, message=FALSE, echo=FALSE}
-# Fit the initial CART model
-cart_fit <- rpart(total_cases ~ ., data = train, 
-                  control = rpart.control(cp = 0.002, minsplit = 20))
-
-# Plot the un-pruned CART model
-rpart.plot(cart_fit, digits = 3, type = 4, extra = 1)
-
-# Prune the CART model
-prune_func <- function(tree) {
-  fit_details <- as.data.frame(tree$cptable)
-  optimal_cp <- with(fit_details, max(CP[xerror - xstd <= min(xerror)]))
-  prune(tree, cp = optimal_cp)
-}
-cart_pruned <- prune_func(cart_fit)
-
-# Calculate RMSE for the pruned CART model
-pred_cart <- predict(cart_pruned, test)
-rmse_cart <- sqrt(mean((pred_cart - test$total_cases)^2))
-```
-```{r, message=FALSE, echo=FALSE}
-# Fit the Random Forest model
-rf_fit <- randomForest(total_cases ~ ., data = train, ntree = 200)
-
-# Calculate RMSE for the Random Forest model
-pred_rf <- predict(rf_fit, test)
-rmse_rf <- sqrt(mean((pred_rf - test$total_cases)^2))
-```
-
-```{r, message=FALSE, echo=FALSE}
-# Fit the GBM model
-gbm_fit <- gbm(total_cases ~ ., data = train, 
-               distribution = "gaussian", n.trees = 300, 
-               interaction.depth = 3, shrinkage = 0.1, 
-               cv.folds = 5, n.cores = 1)
-
-# Determine the optimal number of trees
-opt_trees <- gbm.perf(gbm_fit, method = "cv")
-
-# Calculate RMSE for the GBM model
-pred_gbm <- predict(gbm_fit, test, n.trees = opt_trees)
-rmse_gbm <- sqrt(mean((pred_gbm - test$total_cases)^2))
-```
-
-#The GBM model's performance plot reveals how it learns over time, with the training error steadily decreasing, reflecting a good fit on training data. The validation error's dip and subsequent plateau suggest an optimal number of trees at the dashed line, beyond which the model may start to overfit.
-
-```{r, message=FALSE, echo=FALSE}
-cat("RMSE for Pruned CART Model: ", rmse_cart, "\n")
-cat("RMSE for Random Forest Model: ", rmse_rf, "\n")
-cat("RMSE for GBM Model: ", rmse_gbm, "\n")
-```
-#The Random Forest model outperforms its counterparts with an RMSE of 23.67, making it the most accurate for predicting dengue cases in this dataset, while the CART and GBM models show higher errors, at 28.40 and 25.93 respectively.
-
-```{r, message=FALSE, echo=FALSE}
-if (rmse_rf == min(c(rmse_cart, rmse_rf, rmse_gbm))) {
-  # PDP for specific_humidity
-  pdp_humidity <- partial(rf_fit, pred.var = "specific_humidity", train = train, grid.resolution = 10)
-  plot(pdp_humidity, main = "Partial Dependence Plot for Specific Humidity", xlab = "Specific Humidity", ylab = "Predicted Dengue Cases")
-  
-  # PDP for precipitation_amt
-  pdp_precip <- partial(rf_fit, pred.var = "precipitation_amt", train = train, grid.resolution = 10)
-  plot(pdp_precip, main = "Partial Dependence Plot for Precipitation Amount", xlab = "Precipitation Amount", ylab = "Predicted Dengue Cases")
-  
-  # PDP for tdtr_k
-  pdp_tdtr <- partial(rf_fit, pred.var = "tdtr_k", train = train, grid.resolution = 10)
-  plot(pdp_tdtr, main = "Partial Dependence Plot for Diurnal Temperature Range", xlab = "Temperature Range", ylab = "Predicted Dengue Cases")
-} else {
-  cat("The Random Forest model did not perform best. Adjust the code to plot PDPs for the best-performing model.")
-}
-```
-
-#The Partial Dependence Plots suggest that higher specific humidity may increase dengue cases, while diurnal temperature range shows a possible decrease in cases with greater fluctuations. Precipitation amount, however, doesn't show a clear impact, indicating that other factors might be at play or that its relationship to dengue cases isn't straightforward. These insights can help focus preventive measures on more impactful environmental factors.
-
-# Question 3
 
 # Introduction 
 
@@ -131,6 +30,7 @@ Using a comprehensive dataset on 7,894 commercial rental propertes from across t
 Before building the model, we begin by preparing the dataset. Three key adjustments: Defining the revenue per square foot variable as the product of Rent and Leasing Rate, defining a single "green certified" variable that is equal to one if the building is either LEED or EnergyStar certified, and splitting the data into training and testing sets. 
 
 ```{r, include=FALSE}
+greenhouses <- read.csv("~/Downloads/greenbuildings.csv")
 
 # Create revenue per square foot per year variable
 greenhouses$revenue_psqft <- greenhouses$Rent * greenhouses$leasing_rate
@@ -152,6 +52,8 @@ In the model construction phase, we established two models: a comprehensive base
 For the baseline linear regression model, we included relevant predictors and introduced an interaction term between market rent and size. In contrast, the random forest model was trained with a subset of predictors selected based on their importance in predicting revenue per square foot. Our random forest model construction utilized variable importance metrics to identify influential predictors.
 
 By comparing the performance metrics of the random forest model against the baseline linear regression model, we can assess the effectiveness of using a more sophisticated method for predicting rental revenue per square foot.
+
+
 
 
 ```{r, echo=FALSE}
@@ -212,26 +114,4 @@ partialPlot(rf_model, train_set, x.var = "green_certified")
 
 Our objective was to predict revenue per square foot for commercial rental properties and to quantify the financial impact of green certification. Data preprocessing was conducted, and the dataset was split into training and testing subsets. We developed predictive models using linear regression and random forest techniques, with the random forest model outperforming its linear regression counterpart in terms of predictive accuracy. We used the random forest model to determine that a building with a green certification is estimated to generate about $300 in additional annual revenue per square foot. However, the partial dependence plot revealed a positive but modest relationship when the effects of other variables are controlled, indicating that green certification has a positive, albeit smaller than initially estimated, isolated impact on predicted annual revenue per square foot.  This nuanced finding suggests that while green certification is beneficial, the magnitude of its isolated effect on revenue per square foot is not as substantial when considered in the context of other contributing factors.
 
-# Question 4
-I have started working on this one already.
-## GitHub Documents
 
-This is an R Markdown format used for publishing markdown documents to GitHub. When you click the **Knit** button all R code chunks are run and a markdown file (.md) suitable for publishing to GitHub is generated.
-
-## Including Code
-
-You can include R code in the document as follows:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
