@@ -66,13 +66,13 @@ house_mod = housing %>%
 house_split =  initial_split(house_mod, prop=0.8)
 house_train = training(house_split)
 house_test  = testing(house_split)
-house.forest = randomForest(medianHouseValue ~ latitude + longitude + housingMedianAge + stand_rooms + stand_bedrooms +stand_rooms + population + households + medianIncome, data=house_train, importance = TRUE)
+house.forest = randomForest(medianHouseValue ~ latitude + longitude + housingMedianAge + stand_bedrooms +stand_rooms + population + households + medianIncome, data=house_train, ntree = 1000, mtry = 3, importance = TRUE)
 ```
-To predict median House Value with the features provided, we decided to use a random forest model, specifically using the randomForest function in R. Both totalRooms and totalBedrooms listed the number of bedrooms and rooms for the census track, which could be problematic. To adjust this, Total Rooms and Total Bedrooms were standardized by census tract population, dividing both values by the population of their census tract. The resulting variables were stand_bedrooms and stand_rooms, which measure bedrooms and rooms by track populations. Apart from these modifications, we used all other columns in the data as is. Since the number of variables was small (only 8), we did not use PCA to simplify the data before finding the tree. Further, as we used the random forest model, cross validation was not necessary.After running the randomForest model on the training data, we tested its out of sample accuracy to estimate the following RMSE as a measure of out of sample accuracy.
+To predict median House Value with the features provided, we decided to use a random forest model, specifically using the randomForest function in R. Both totalRooms and totalBedrooms listed the number of bedrooms and rooms for the census track, which could be problematic. To adjust this, Total Rooms and Total Bedrooms were standardized by census tract population, dividing both values by the population of their census tract. The resulting variables were stand_bedrooms and stand_rooms, which measure bedrooms and rooms by track populations. Apart from these modifications, we used all other columns in the data as is. Since the number of variables was small (only 8), we did not use PCA to simplify the data before finding the forest. Further, as we used the random forest model, cross validation was not necessary.The RandomForest function was set to calculate 1000 bootstrapped samples and selected 3 features within each bootstrapped samples (as there are 8 features and the closest integer to the square root of 8 is 3). After running the randomForest model on the training data, we tested its out of sample accuracy to estimate the following RMSE as a measure of out of sample accuracy.
 ```{r, include = TRUE}
 modelr::rmse(house.forest, house_test)
 ```
-Next we are going to plot the actual median house values, the predicted median house values and the residuals of the model's predictions
+Next we are going to plot the actual median house values, the predicted median house values and the residuals of the model's predictions over a map of California.
 ```{r, include = FALSE}
 
 house_mod = house_mod %>%
@@ -99,4 +99,4 @@ house_res = house_mod %>%
 ggmap(cal_test) + geom_point(data = house_res, aes(x=lon, y=lat, color=housing_resid))  + 
   scale_color_continuous(type = "viridis")
 ```
-As can be seen in this 3 graphs, the model appears to do a decent job of predicting the median value of houses in a census tract. The model appears to slightly underestimate median house value compared to the actual median house value, but makes relatively close predictions on average, as can be seen with the residual dots that are mostly around dark green, light blue color. 
+As can be seen in this 3 graphs, the model appears to do a decent job of predicting the median value of houses in a census tract. The model appears to slightly underestimate median house value compared to the actual median house value, but makes relatively close predictions on average, as can be seen with the residual dots that are mostly around dark green, light blue color.However, there are a few tracts that are overestimated, as can be seen with the several purple/dark blue dots scattered across the map. 
