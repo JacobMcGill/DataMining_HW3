@@ -1,6 +1,8 @@
 ---
-title: "ECO395M Data Mining: HW 3"
-output: github_document
+title: "HW23"
+authors: "Daniel Oliner, Musab Alquwaee, Jacob McGill"
+output: md_document
+date: "2024-03-31"
 ---
 
 ```{r setup, include=FALSE}
