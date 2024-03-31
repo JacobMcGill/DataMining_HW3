@@ -10,8 +10,8 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r, include=FALSE}
-dengue = read.csv("C:/Users/musab/OneDrive/Documents/ECON MA/Data mining/HW3/dengue.csv")
-greenhouses <- read.csv("~/Downloads/greenbuildings.csv")
+dengue = read.csv("C://Users/jacob/Downloads/dengue.csv")
+greenhouses <- read.csv("C://Users/jacob/Downloads/greenbuildings.csv")
 housing = read.csv('C://Users/jacob/Downloads/CAhousing.csv', header=TRUE)
 stadia_key = Sys.getenv("stadia_key")
 library(rpart)
@@ -116,14 +116,15 @@ pred_gbm <- predict(gbm_fit, test, n.trees = opt_trees)
 rmse_gbm <- sqrt(mean((pred_gbm - test$total_cases)^2))
 ```
 
-#The GBM model's performance plot reveals how it learns over time, with the training error steadily decreasing, reflecting a good fit on training data. The validation error's dip and subsequent plateau suggest an optimal number of trees at the dashed line, beyond which the model may start to overfit.
+The GBM model's performance plot reveals how it learns over time, with the training error steadily decreasing, reflecting a good fit on training data. The validation error's dip and subsequent plateau suggest an optimal number of trees at the dashed line, beyond which the model may start to overfit.
 
 ```{r, message=FALSE, echo=FALSE}
 cat("RMSE for Pruned CART Model: ", rmse_cart, "\n")
 cat("RMSE for Random Forest Model: ", rmse_rf, "\n")
 cat("RMSE for GBM Model: ", rmse_gbm, "\n")
 ```
-#The Random Forest model outperforms its counterparts with an RMSE of 23.67, making it the most accurate for predicting dengue cases in this dataset, while the CART and GBM models show higher errors, at 28.40 and 25.93 respectively.
+
+The Random Forest model outperforms its counterparts with an RMSE of 23.67, making it the most accurate for predicting dengue cases in this dataset, while the CART and GBM models show higher errors, at 28.40 and 25.93 respectively.
 
 ```{r, message=FALSE, echo=FALSE}
 if (rmse_rf == min(c(rmse_cart, rmse_rf, rmse_gbm))) {
@@ -143,7 +144,7 @@ if (rmse_rf == min(c(rmse_cart, rmse_rf, rmse_gbm))) {
 }
 ```
 
-#The Partial Dependence Plots suggest that higher specific humidity may increase dengue cases, while diurnal temperature range shows a possible decrease in cases with greater fluctuations. Precipitation amount, however, doesn't show a clear impact, indicating that other factors might be at play or that its relationship to dengue cases isn't straightforward. These insights can help focus preventive measures on more impactful environmental factors.
+The Partial Dependence Plots suggest that higher specific humidity may increase dengue cases, while diurnal temperature range shows a possible decrease in cases with greater fluctuations. Precipitation amount, however, doesn't show a clear impact, indicating that other factors might be at play or that its relationship to dengue cases isn't straightforward. These insights can help focus preventive measures on more impactful environmental factors.
 
 # Question 3
 
@@ -151,7 +152,7 @@ if (rmse_rf == min(c(rmse_cart, rmse_rf, rmse_gbm))) {
 
 Using a comprehensive dataset on 7,894 commercial rental propertes from across the United States, we will first build the best predicitve model possible for revenue per square foot per calendar year. Using this model we will quantify the average change in rental income per square foot associated with green certification, combining both LEED and EnergyStar as a single "green certified" category for simplicity.
 
-# Data Preperation 
+# Data Preparation 
 
 Before building the model, we begin by preparing the dataset. Three key adjustments: Defining the revenue per square foot variable as the product of Rent and Leasing Rate, defining a single "green certified" variable that is equal to one if the building is either LEED or EnergyStar certified, and splitting the data into training and testing sets. 
 
