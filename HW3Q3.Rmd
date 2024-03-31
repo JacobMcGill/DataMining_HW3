@@ -1,13 +1,15 @@
 ---
-title: "ECO395M Data Mining: HW 3"
-output: github_document
+title: "HW3 Q3"
+output: word_document
+date: "`r Sys.Date()`"
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r, include = FALSE}
+
+```{r, include=FALSE}
 library(tidyverse)
 library(ggplot2)
 library(rsample)
@@ -16,15 +18,8 @@ library(caret)
 library(rpart)
 library(randomForest)
 library(glmnet)
-greenhouses <- read.csv("~/Downloads/greenbuildings.csv")
+
 ```
-
-
-# Question 1
-Jacob will take care of this.
-# Question 2
-Musab will take care of this.
-# Question 3
 
 # Introduction 
 
@@ -35,6 +30,7 @@ Using a comprehensive dataset on 7,894 commercial rental propertes from across t
 Before building the model, we begin by preparing the dataset. Three key adjustments: Defining the revenue per square foot variable as the product of Rent and Leasing Rate, defining a single "green certified" variable that is equal to one if the building is either LEED or EnergyStar certified, and splitting the data into training and testing sets. 
 
 ```{r, include=FALSE}
+greenhouses <- read.csv("~/Downloads/greenbuildings.csv")
 
 # Create revenue per square foot per year variable
 greenhouses$revenue_psqft <- greenhouses$Rent * greenhouses$leasing_rate
@@ -56,6 +52,8 @@ In the model construction phase, we established two models: a comprehensive base
 For the baseline linear regression model, we included relevant predictors and introduced an interaction term between market rent and size. In contrast, the random forest model was trained with a subset of predictors selected based on their importance in predicting revenue per square foot. Our random forest model construction utilized variable importance metrics to identify influential predictors.
 
 By comparing the performance metrics of the random forest model against the baseline linear regression model, we can assess the effectiveness of using a more sophisticated method for predicting rental revenue per square foot.
+
+
 
 
 ```{r, echo=FALSE}
@@ -116,26 +114,4 @@ partialPlot(rf_model, train_set, x.var = "green_certified")
 
 Our objective was to predict revenue per square foot for commercial rental properties and to quantify the financial impact of green certification. Data preprocessing was conducted, and the dataset was split into training and testing subsets. We developed predictive models using linear regression and random forest techniques, with the random forest model outperforming its linear regression counterpart in terms of predictive accuracy. We used the random forest model to determine that a building with a green certification is estimated to generate about $300 in additional annual revenue per square foot. However, the partial dependence plot revealed a positive but modest relationship when the effects of other variables are controlled, indicating that green certification has a positive, albeit smaller than initially estimated, isolated impact on predicted annual revenue per square foot.  This nuanced finding suggests that while green certification is beneficial, the magnitude of its isolated effect on revenue per square foot is not as substantial when considered in the context of other contributing factors.
 
-# Question 4
-I have started working on this one already.
-## GitHub Documents
 
-This is an R Markdown format used for publishing markdown documents to GitHub. When you click the **Knit** button all R code chunks are run and a markdown file (.md) suitable for publishing to GitHub is generated.
-
-## Including Code
-
-You can include R code in the document as follows:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
