@@ -157,7 +157,7 @@ calculate_partial_dependence <- function(model, data, pred.var){
 }
 
 # Calculate partial dependence for 'specific_humidity'
-pd_data_humidity <- calculate_partial_dependence(rf_fit, trainData, "specific_humidity")
+pd_data_humidity <- calculate_partial_dependence(rf_fit, train, "specific_humidity")
 
 # Plot
 ggplot(pd_data_humidity, aes(x = Variable_Value, y = Avg_Prediction)) +
@@ -166,7 +166,7 @@ ggplot(pd_data_humidity, aes(x = Variable_Value, y = Avg_Prediction)) +
        x = "Specific Humidity",
        y = "Average Predicted Number of Dengue Cases")
 # Calculate partial dependence for 'tdtr_k'
-pd_data_tdtr <- calculate_partial_dependence(rf_fit, trainData, "tdtr_k")
+pd_data_tdtr <- calculate_partial_dependence(rf_fit, train, "tdtr_k")
 
 # Plot for 'tdtr_k'
 ggplot(pd_data_tdtr, aes(x = Variable_Value, y = Avg_Prediction)) +
@@ -176,7 +176,7 @@ ggplot(pd_data_tdtr, aes(x = Variable_Value, y = Avg_Prediction)) +
        y = "Average Predicted Number of Dengue Cases")
 
 # Calculate partial dependence for 'precipitation_amt'
-pd_data_precip <- calculate_partial_dependence(rf_fit, trainData, "precipitation_amt")
+pd_data_precip <- calculate_partial_dependence(rf_fit, train, "precipitation_amt")
 
 # Plot for 'precipitation_amt'
 ggplot(pd_data_precip, aes(x = Variable_Value, y = Avg_Prediction)) +
