@@ -71,7 +71,7 @@ train <- training(split)
 test <- testing(split)
 
 ```
-# We fit a CART model and visualize the initial un-pruned tree.
+We fit a CART model and visualize the initial un-pruned tree.
 
 ```{r, message=FALSE, echo=FALSE}
 # Fit the initial CART model
@@ -93,7 +93,7 @@ cart_pruned <- prune_func(cart_fit)
 pred_cart <- predict(cart_pruned, test)
 rmse_cart <- sqrt(mean((pred_cart - test$total_cases)^2))
 ```
-#Next, we build a Random Forest model with specified parameters.
+Next, we build a Random Forest model with specified parameters.
 
 ```{r, message=FALSE, echo=FALSE}
 # Fit the Random Forest model
@@ -103,7 +103,7 @@ rf_fit <- randomForest(total_cases ~ ., data = train, ntree = 200)
 pred_rf <- predict(rf_fit, test)
 rmse_rf <- sqrt(mean((pred_rf - test$total_cases)^2))
 ```
-#We then train a GBM model, tuning the parameters for optimal performance.
+We then train a GBM model, tuning the parameters for optimal performance.
 
 ```{r, message=FALSE, echo=FALSE}
 # Fit the GBM model
