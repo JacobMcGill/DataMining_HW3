@@ -36,21 +36,21 @@ library(modelr)
 ```
 
 
-# Question 1
+# Question 1: What Causes
 
-## 1
+## Part 1
 
 You cannot just regress "Crime" on "Police" to understand the impact of more cops in the street on crime due to the fact that cities with more crime are likely to have more police officers.Because this unobserved 3rd variable exists, regressing crime on police will not produce an accurate measure of the effect of the number of police officers on the crime rate.
 
-## 2
+## Part 2
 
 To isolate the effect of the number of police officers on crime, the researchers regressed crime on a dummy variable indicating when Washington DC was on a "high" terror alert. Since this alert resulted in a heightened police presence but is not influenced by street crime, it could act as instrumental variable to estimate the causal effect of heightened police presence on crime. As can be seen in the table, days on High Alert saw on average 7.136 less daily crimes, an effect that is statistically significant at the 5% level.
 
-## 3
+## Part 3
 
 The authors controlled for Metro ridership to control for if tourists were less likely to visit Washington DC or be out in the city when it was high terror alert. The control is attempting to capture any reduction in daily crime that would have resulted from less tourists being in the city who could be potential victims.
 
-## 4
+## Part 4
 
 The model estimates the effect of an interaction between being on high alert and in Washington DC District 1 (the district containing the National Mall), an interaction between high alert and being in the other police districts, and the log of midday ridership on the DC Metro on daily crime rates. It is estimating the difference between the decrease in daily crime rates in the District containing the National Mall (which sees a greater increases in police presence) compared to other districts, controlling for people travelling around the city. As can be seen, District 1 has a decreases of -2.62 average daily crime rates when high alert is declared, while no statistically significant effect is estimated in the other districts.
 
@@ -276,7 +276,7 @@ cat("Average Change in Rental Income Per Square Foot Associated With Green Certi
 partialPlot(rf_model, train_set, x.var = "green_certified")
 ```
 
-# Conclusion
+## Conclusion
 
 Our objective was to predict revenue per square foot for commercial rental properties and to quantify the financial impact of green certification. Data preprocessing was conducted, and the dataset was split into training and testing subsets. We developed predictive models using linear regression and random forest techniques, with the random forest model outperforming its linear regression counterpart in terms of predictive accuracy. We used the random forest model to determine that a building with a green certification is estimated to generate about $300 in additional annual revenue per square foot. However, the partial dependence plot revealed a positive but modest relationship when the effects of other variables are controlled, indicating that green certification has a positive, albeit smaller than initially estimated, isolated impact on predicted annual revenue per square foot.  This nuanced finding suggests that while green certification is beneficial, the magnitude of its isolated effect on revenue per square foot is not as substantial when considered in the context of other contributing factors.
 
@@ -332,4 +332,5 @@ house_res = house_mod %>%
 ggmap(cal_test) + geom_point(data = house_res, aes(x=lon, y=lat, color=housing_resid))  + 
   scale_color_continuous(type = "viridis")
 ```
+
 As can be seen in this 3 graphs, the model appears to do a decent job of predicting the median value of houses in a census tract. The model appears to slightly underestimate median house value compared to the actual median house value, but makes relatively close predictions on average, as can be seen with the residual dots that are mostly around dark green, light blue color. 

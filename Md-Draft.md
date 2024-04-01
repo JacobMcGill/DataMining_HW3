@@ -1,6 +1,6 @@
-# Question 1
+# Question 1: What Causes
 
-## 1
+## Part 1
 
 You cannot just regress “Crime” on “Police” to understand the impact of
 more cops in the street on crime due to the fact that cities with more
@@ -9,7 +9,7 @@ crime are likely to have more police officers.Because this unobserved
 accurate measure of the effect of the number of police officers on the
 crime rate.
 
-## 2
+## Part 2
 
 To isolate the effect of the number of police officers on crime, the
 researchers regressed crime on a dummy variable indicating when
@@ -20,7 +20,7 @@ heightened police presence on crime. As can be seen in the table, days
 on High Alert saw on average 7.136 less daily crimes, an effect that is
 statistically significant at the 5% level.
 
-## 3
+## Part 3
 
 The authors controlled for Metro ridership to control for if tourists
 were less likely to visit Washington DC or be out in the city when it
@@ -28,7 +28,7 @@ was high terror alert. The control is attempting to capture any
 reduction in daily crime that would have resulted from less tourists
 being in the city who could be potential victims.
 
-## 4
+## Part 4
 
 The model estimates the effect of an interaction between being on high
 alert and in Washington DC District 1 (the district containing the
@@ -195,7 +195,7 @@ income associated with green certification.
 
 ![](Md-Draft_files/figure-markdown_strict/unnamed-chunk-11-1.png)
 
-# Conclusion
+## Conclusion
 
 Our objective was to predict revenue per square foot for commercial
 rental properties and to quantify the financial impact of green
@@ -238,6 +238,7 @@ Next we are going to plot the actual median house values, the predicted
 median house values and the residuals of the model’s predictions
 
 ![](Md-Draft_files/figure-markdown_strict/unnamed-chunk-16-1.png)![](Md-Draft_files/figure-markdown_strict/unnamed-chunk-16-2.png)![](Md-Draft_files/figure-markdown_strict/unnamed-chunk-16-3.png)
+
 As can be seen in this 3 graphs, the model appears to do a decent job of
 predicting the median value of houses in a census tract. The model
 appears to slightly underestimate median house value compared to the
