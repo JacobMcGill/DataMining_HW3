@@ -1,4 +1,4 @@
-# Question 1: What Causes
+# Question 1
 
 ## Part 1
 
