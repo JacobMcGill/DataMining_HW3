@@ -36,7 +36,7 @@ library(modelr)
 ```
 
 
-# Question 1: What Causes
+# Question 1
 
 ## Part 1
 
@@ -55,7 +55,7 @@ The authors controlled for Metro ridership to control for if tourists were less 
 The model estimates the effect of an interaction between being on high alert and in Washington DC District 1 (the district containing the National Mall), an interaction between high alert and being in the other police districts, and the log of midday ridership on the DC Metro on daily crime rates. It is estimating the difference between the decrease in daily crime rates in the District containing the National Mall (which sees a greater increases in police presence) compared to other districts, controlling for people travelling around the city. As can be seen, District 1 has a decreases of -2.62 average daily crime rates when high alert is declared, while no statistically significant effect is estimated in the other districts.
 
 
-# Question 2
+# Question 2: 
 
 ```{r, message=FALSE, echo=FALSE}
 # Exclude rows with missing values
@@ -305,11 +305,14 @@ house_train = training(house_split)
 house_test  = testing(house_split)
 house.forest = randomForest(medianHouseValue ~ latitude + longitude + housingMedianAge + stand_rooms + stand_bedrooms +stand_rooms + population + households + medianIncome, data=house_train, ntree = 1000, mtry = 3, importance = TRUE)
 ```
-To predict median House Value with the features provided, we decided to use a random forest model, specifically using the randomForest function in R. Both totalRooms and totalBedrooms listed the number of bedrooms and rooms for the census track, which could be problematic. To adjust this, Total Rooms and Total Bedrooms were standardized by census tract population, dividing both values by the population of their census tract. The resulting variables were stand_bedrooms and stand_rooms, which measure bedrooms and rooms by track populations. Apart from these modifications, we used all other columns in the data as is. Since the number of variables was small (only 8), we did not use PCA to simplify the data before finding the tree. Further, as we used the random forest model, cross validation was not necessary.After running the randomForest model on the training data, we tested its out of sample accuracy to estimate the following RMSE as a measure of out of sample accuracy.
+To predict median House Value with the features provided, we decided to use a random forest model, specifically using the randomForest function in R. Both totalRooms and totalBedrooms listed the number of bedrooms and rooms for the census track, which could be problematic. To adjust this, Total Rooms and Total Bedrooms were standardized by census tract population, dividing both values by the population of their census tract. The resulting variables were stand_bedrooms and stand_rooms, which measure bedrooms and rooms by track populations. Apart from these modifications, we used all other columns in the data as is. Since the number of variables was small (only 8), we did not use PCA to simplify the data before finding the tree. Further, as we used the random forest model, cross validation was not necessary. The RandomForest model was estimated with ntree set to 1000 and mtry set to 3 (as that was the closest integer to square root of 8, the number of feature in the model). After running the randomForest model on the training data, we tested its out of sample accuracy to estimate the following RMSE as a measure of out of sample accuracy.
+
 ```{r, echo = FALSE}
 modelr::rmse(house.forest, house_test)
 ```
+
 Next we are going to plot the actual median house values, the predicted median house values and the residuals of the model's predictions
+
 ```{r, include = FALSE}
 
 house_mod = house_mod %>%

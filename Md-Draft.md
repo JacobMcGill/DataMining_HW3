@@ -234,9 +234,12 @@ which measure bedrooms and rooms by track populations. Apart from these
 modifications, we used all other columns in the data as is. Since the
 number of variables was small (only 8), we did not use PCA to simplify
 the data before finding the tree. Further, as we used the random forest
-model, cross validation was not necessary.After running the randomForest
-model on the training data, we tested its out of sample accuracy to
-estimate the following RMSE as a measure of out of sample accuracy.
+model, cross validation was not necessary. The RandomForest model was
+estimated with ntree set to 1000 and mtry set to 3 (as that was the
+closest integer to square root of 8, the number of feature in the
+model). After running the randomForest model on the training data, we
+tested its out of sample accuracy to estimate the following RMSE as a
+measure of out of sample accuracy.
 
     ## [1] 50533.37
 
