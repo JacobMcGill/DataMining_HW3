@@ -148,11 +148,11 @@ The Partial Dependence Plots suggest that higher specific humidity may increase 
 
 # Question 3
 
-# Introduction 
+## Introduction 
 
-Using a comprehensive dataset on 7,894 commercial rental propertes from across the United States, we will first build the best predicitve model possible for revenue per square foot per calendar year. Using this model we will quantify the average change in rental income per square foot associated with green certification, combining both LEED and EnergyStar as a single "green certified" category for simplicity.
+Using a comprehensive dataset on 7,894 commercial rental propertes from across the United States, we will first build the best predictive model possible for revenue per square foot per calendar year. Using this model we will quantify the average change in rental income per square foot associated with green certification, combining both LEED and EnergyStar as a single "green certified" category for simplicity.
 
-# Data Preparation 
+## Data Preparation 
 
 Before building the model, we begin by preparing the dataset. Three key adjustments: Defining the revenue per square foot variable as the product of Rent and Leasing Rate, defining a single "green certified" variable that is equal to one if the building is either LEED or EnergyStar certified, and splitting the data into training and testing sets. 
 
@@ -171,7 +171,7 @@ train_set <- training(split)
 test_set <- testing(split)
 ```
 
-# Model Construction 
+## Model Construction 
 
 In the model construction phase, we established two models: a comprehensive baseline model using linear regression and a random forest model both aimed at predicting the revenue per square foot (revenue_psqft). The baseline linear model serves as a reference point against which we can evaluate the relative performance of the random forest model. 
 
@@ -196,7 +196,7 @@ print(rf_model)
 
 ```
 
-# Model Evaluation
+## Model Evaluation
 
 ```{r, echo=FALSE}
 lm_predictions <- predict(lm_model, newdata = test_set)
@@ -213,7 +213,7 @@ In the model evaluation phase, we compare the predictive performance of the base
 
 By leveraging a set of decision trees, the random forest model can better adapt to the complexities inherent in the data, resulting in more accurate predictions of rental revenue per square foot. Therefore, the random forest model emerges as the preferred choice for its predictive accuracy and we will use it to determine the average change in rental income associated with green certification. 
 
-# Quantifying the Average Change in Revenue Per Square Foot Associated With Green Certification
+## Quantifying the Average Change in Revenue Per Square Foot Associated With Green Certification
 
 ```{r, echo=FALSE}
 
@@ -257,10 +257,10 @@ house_mod = housing %>%
 house_split =  initial_split(house_mod, prop=0.8)
 house_train = training(house_split)
 house_test  = testing(house_split)
-house.forest = randomForest(medianHouseValue ~ latitude + longitude + housingMedianAge + stand_rooms + stand_bedrooms +stand_rooms + population + households + medianIncome, data=house_train, importance = TRUE)
+house.forest = randomForest(medianHouseValue ~ latitude + longitude + housingMedianAge + stand_rooms + stand_bedrooms +stand_rooms + population + households + medianIncome, data=house_train, ntree = 1000, mtry = 3, importance = TRUE)
 ```
 To predict median House Value with the features provided, we decided to use a random forest model, specifically using the randomForest function in R. Both totalRooms and totalBedrooms listed the number of bedrooms and rooms for the census track, which could be problematic. To adjust this, Total Rooms and Total Bedrooms were standardized by census tract population, dividing both values by the population of their census tract. The resulting variables were stand_bedrooms and stand_rooms, which measure bedrooms and rooms by track populations. Apart from these modifications, we used all other columns in the data as is. Since the number of variables was small (only 8), we did not use PCA to simplify the data before finding the tree. Further, as we used the random forest model, cross validation was not necessary.After running the randomForest model on the training data, we tested its out of sample accuracy to estimate the following RMSE as a measure of out of sample accuracy.
-```{r, include = TRUE}
+```{r, echo = FALSE}
 modelr::rmse(house.forest, house_test)
 ```
 Next we are going to plot the actual median house values, the predicted median house values and the residuals of the model's predictions
@@ -270,7 +270,7 @@ house_mod = house_mod %>%
   mutate(house_pred = predict(house.forest, house_mod),
            housing_resid = medianHouseValue - house_pred)
 ```
-```{r, include = TRUE}
+```{r, echo = FALSE}
 
 house_plot = ggplot(house_val) + 
   geom_point(aes(x=lon, y=lat, color=medianHouseValue)) + 
