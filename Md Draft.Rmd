@@ -127,21 +127,63 @@ cat("RMSE for GBM Model: ", rmse_gbm, "\n")
 The Random Forest model outperforms its counterparts with an RMSE of 23.67, making it the most accurate for predicting dengue cases in this dataset, while the CART and GBM models show higher errors, at 28.40 and 25.93 respectively.
 
 ```{r, message=FALSE, echo=FALSE}
-if (rmse_rf == min(c(rmse_cart, rmse_rf, rmse_gbm))) {
-  # PDP for specific_humidity
-  pdp_humidity <- partial(rf_fit, pred.var = "specific_humidity", train = train, grid.resolution = 10)
-  plot(pdp_humidity, main = "Partial Dependence Plot for Specific Humidity", xlab = "Specific Humidity", ylab = "Predicted Dengue Cases")
+calculate_partial_dependence <- function(model, data, pred.var){
+  # Create a grid of values for the variable of interest
+  var_values <- seq(min(data[[pred.var]], na.rm = TRUE), 
+                    max(data[[pred.var]], na.rm = TRUE), 
+                    length.out = 50)
   
-  # PDP for precipitation_amt
-  pdp_precip <- partial(rf_fit, pred.var = "precipitation_amt", train = train, grid.resolution = 10)
-  plot(pdp_precip, main = "Partial Dependence Plot for Precipitation Amount", xlab = "Precipitation Amount", ylab = "Predicted Dengue Cases")
+  avg_predictions <- numeric(length(var_values))
   
-  # PDP for tdtr_k
-  pdp_tdtr <- partial(rf_fit, pred.var = "tdtr_k", train = train, grid.resolution = 10)
-  plot(pdp_tdtr, main = "Partial Dependence Plot for Diurnal Temperature Range", xlab = "Temperature Range", ylab = "Predicted Dengue Cases")
-} else {
-  cat("The Random Forest model did not perform best. Adjust the code to plot PDPs for the best-performing model.")
+  # For each value of the variable, predict using the model while holding other variables constant
+  for(i in seq_along(var_values)){
+    # Replace the column in the dataset with the current value
+    data[[pred.var]] <- var_values[i]
+    
+    # Predict the outcome using the model
+    predictions <- predict(model, newdata = data)
+    
+    # Store the average prediction
+    avg_predictions[i] <- mean(predictions)
+  }
+  
+  # Create a data frame for plotting
+  pd_data <- data.frame(
+    Variable_Value = var_values,
+    Avg_Prediction = avg_predictions
+  )
+  
+  return(pd_data)
 }
+
+# Calculate partial dependence for 'specific_humidity'
+pd_data_humidity <- calculate_partial_dependence(rf_fit, trainData, "specific_humidity")
+
+# Plot
+ggplot(pd_data_humidity, aes(x = Variable_Value, y = Avg_Prediction)) +
+  geom_line() +
+  labs(title = "Partial Dependence Plot for Specific Humidity",
+       x = "Specific Humidity",
+       y = "Average Predicted Number of Dengue Cases")
+# Calculate partial dependence for 'tdtr_k'
+pd_data_tdtr <- calculate_partial_dependence(rf_fit, trainData, "tdtr_k")
+
+# Plot for 'tdtr_k'
+ggplot(pd_data_tdtr, aes(x = Variable_Value, y = Avg_Prediction)) +
+  geom_line() +
+  labs(title = "Partial Dependence Plot for Diurnal Temperature Range (tdtr_k)",
+       x = "Diurnal Temperature Range (K)",
+       y = "Average Predicted Number of Dengue Cases")
+
+# Calculate partial dependence for 'precipitation_amt'
+pd_data_precip <- calculate_partial_dependence(rf_fit, trainData, "precipitation_amt")
+
+# Plot for 'precipitation_amt'
+ggplot(pd_data_precip, aes(x = Variable_Value, y = Avg_Prediction)) +
+  geom_line() +
+  labs(title = "Partial Dependence Plot for Precipitation Amount",
+       x = "Precipitation Amount (mm)",
+       y = "Average Predicted Number of Dengue Cases")
 ```
 
 The Partial Dependence Plots suggest that higher specific humidity may increase dengue cases, while diurnal temperature range shows a possible decrease in cases with greater fluctuations. Precipitation amount, however, doesn't show a clear impact, indicating that other factors might be at play or that its relationship to dengue cases isn't straightforward. These insights can help focus preventive measures on more impactful environmental factors.
