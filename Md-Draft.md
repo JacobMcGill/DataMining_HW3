@@ -44,7 +44,13 @@ estimated in the other districts.
 
 # Question 2
 
-![](Md-Draft_files/figure-markdown_strict/unnamed-chunk-3-1.png)
+We fit a CART model and visualize the initial un-pruned tree.
+
+![](Md-Draft_files/figure-markdown_strict/unnamed-chunk-3-1.png) Next,
+we build a Random Forest model with specified parameters.
+
+We then train a GBM model, tuning the parameters for optimal
+performance.
 
     ## CV: 1 
     ## CV: 2 
